@@ -8,6 +8,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,7 +20,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    private PuzzleDbHelper dbManager;
+    private PuzzleDbHelper dbHelper;
     private ScrollView sv;
     private int buttonWidth;
 
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        dbManager = new PuzzleDbHelper(this);
+        dbHelper = new PuzzleDbHelper(this);
         sv = (ScrollView)(findViewById(R.id.scrollView));
 
         Point size = new Point();
@@ -53,10 +54,17 @@ public class MainActivity extends AppCompatActivity {
                 Context cx = MainActivity.this;
                 Intent downloadIntent = new Intent();
                 downloadIntent.putExtra("url", new UrlBuilder().getWordsUrl());
-                DownloadService.enqueueWork(cx, downloadIntent);
-                Toast.makeText(MainActivity.this, "Download started...", Toast.LENGTH_SHORT).show();
+
+                if(dbHelper.containsPuzzle()) {
+                    Toast.makeText(cx, "Today's puzzle already downloaded.", Toast.LENGTH_SHORT).show();
+                } else {
+                    DownloadService.enqueueWork(cx, downloadIntent);
+                    Toast.makeText(MainActivity.this, "Download started...", Toast.LENGTH_SHORT).show();
+                }
             }
         });
+
+
     }
 
     @Override
@@ -77,24 +85,28 @@ public class MainActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch(item.getItemId()) {
+            case R.id.action_cleanup:
+                dbHelper.onUpgrade(dbHelper.getWritableDatabase(), 1, 1);
+                updateView();
+                return true;
+            case R.id.action_settings:
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
     public void updateView(){
-        ArrayList<Puzzle> puzzles = dbManager.selectAll();
+        ArrayList<Puzzle> puzzles = dbHelper.selectAll();
+        Log.w("updateView: ", "Puzzles in db " + puzzles.size());
         if(puzzles.size() > 0){
             sv.removeAllViewsInLayout();
 
             GridLayout grid = new GridLayout(this);
-            grid.setRowCount((puzzles.size() + 1) / 2);
-            grid.setColumnCount(2);
+            grid.setRowCount((puzzles.size()));
+            grid.setColumnCount(1);
 
             PuzzleButton[] buttons = new PuzzleButton[puzzles.size()];
             ButtonHandler bh = new ButtonHandler();
@@ -114,8 +126,16 @@ public class MainActivity extends AppCompatActivity {
             }
 
             sv.addView(grid);
+        } else {
+            sv.removeAllViewsInLayout();
         }
     } // updateView
+
+    public void startPuzzle(int id){
+        Intent puzzleIntent = new Intent(this, PuzzleActivity.class);
+        puzzleIntent.putExtra("id", id);
+        startActivity(puzzleIntent);
+    }
 
     private  class ButtonHandler implements View.OnClickListener{
         public void onClick(View v){
@@ -124,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
 
             // TODO: Start PuzzleActivity here. Put puzzle id in an Intent
             // TODO: and let the receiving activity pull from db.
-
+            startPuzzle(id);
         }
     }
 }

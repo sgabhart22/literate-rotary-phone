@@ -11,12 +11,15 @@ public class Puzzle {
     private int id;
     private String date;
     private ArrayList<String> words, answers;
+    private byte[] image;
 
-    public Puzzle(int newId, String newDate, ArrayList<String> newWords, ArrayList<String> newAnswers){
+    public Puzzle(int newId, String newDate, ArrayList<String> newWords,
+                  ArrayList<String> newAnswers, byte[] newImage){
         id = newId;
         date = newDate;
         words = newWords;
         answers = newAnswers;
+        image = newImage;
     }
 
     public int getId() {
@@ -45,6 +48,14 @@ public class Puzzle {
 
     public String getDate(){
         return date;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] newImage) {
+        image = newImage;
     }
 
     @Override
