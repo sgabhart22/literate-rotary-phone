@@ -8,8 +8,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.support.v4.app.JobIntentService;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -18,6 +21,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -94,7 +98,15 @@ public class DownloadService extends JobIntentService {
             }
 
             // Cartoon image as byte array
-            byte[] bytes = Jsoup.connect(srcUrl).ignoreContentType(true).execute().bodyAsBytes();
+            byte[] rawBytes = Jsoup.connect(srcUrl).ignoreContentType(true).execute().bodyAsBytes();
+
+            // Crop cartoon
+            Bitmap bmp = BitmapFactory.decodeByteArray(rawBytes, 0, rawBytes.length);
+            Bitmap cropped = Bitmap.createBitmap(bmp, 245, 50, 240, 368);
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            cropped.compress(Bitmap.CompressFormat.PNG, 100, os);
+            byte[] bytes = os.toByteArray();
+
 
             PuzzleDbHelper dbHelper = new PuzzleDbHelper(cx);
             SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -119,6 +131,9 @@ public class DownloadService extends JobIntentService {
         } catch (IOException e){
             System.err.println(e);
         }
+
+        Intent broadcastIntent = new Intent("download-event");
+        LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
     } //onHandleWork
 
     @Override

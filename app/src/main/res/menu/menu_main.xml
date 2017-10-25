@@ -15,10 +15,4 @@
         android:title="@string/action_cleanup"
         app:showAsAction="never"/>
 
-    <item
-        android:id="@android:id/home"
-        android:orderInCategory="300"
-        android:title="Home"
-        app:showAsAction="never"/>
-
 </menu>

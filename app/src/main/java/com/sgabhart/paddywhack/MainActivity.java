@@ -1,11 +1,14 @@
 package com.sgabhart.paddywhack;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -44,13 +47,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                // TODO: Check if this date's puzzle is already in db.
-
-                /* Default FAB functionality, as per Android Studio.
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                        */
-
                 Context cx = MainActivity.this;
                 Intent downloadIntent = new Intent();
                 downloadIntent.putExtra("url", new UrlBuilder().getWordsUrl());
@@ -64,7 +60,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver,
+                new IntentFilter("download-event"));
     }
 
     @Override
@@ -140,11 +137,22 @@ public class MainActivity extends AppCompatActivity {
     private  class ButtonHandler implements View.OnClickListener{
         public void onClick(View v){
             int id = ((PuzzleButton) v).getId();
-            Toast.makeText(MainActivity.this, "" + id, Toast.LENGTH_LONG).show();
 
             // TODO: Start PuzzleActivity here. Put puzzle id in an Intent
             // TODO: and let the receiving activity pull from db.
             startPuzzle(id);
         }
+    }
+
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateView();
+        }
+    };
+
+    protected void onDestroy(){
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
+        super.onDestroy();
     }
 }
