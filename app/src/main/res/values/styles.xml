@@ -27,6 +27,8 @@
         <item name="android:textSize">18sp</item>
         <item name="android:inputType">textCapCharacters</item>
         <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:background">@drawable/answer_background</item>
+        <item name="android:cursorVisible">false</item>
     </style>
 
 </resources>

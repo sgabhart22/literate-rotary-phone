@@ -43,7 +43,8 @@
         android:layout_marginLeft="20dp"
         android:text="@string/word1"
         android:layout_marginStart="20dp"
-        app:layout_constraintTop_toTopOf="@+id/guideline" />
+        app:layout_constraintTop_toTopOf="@+id/guideline"
+        app:layout_constraintVertical_chainStyle="spread" />
 
     <TextView
         android:layout_width="wrap_content"

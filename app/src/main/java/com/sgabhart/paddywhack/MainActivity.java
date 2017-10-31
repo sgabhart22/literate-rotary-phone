@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Listen for DownloadService to signal completion
         LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver,
                 new IntentFilter("download-event"));
     }

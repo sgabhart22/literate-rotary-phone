@@ -40,12 +40,15 @@ public class PuzzleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_puzzle);
 
+        // Determine which Puzzle was selected from the list
         Intent intent = getIntent();
         int id = intent.getIntExtra("id", 0);
 
+        // Get it from the db
         dbHelper = new PuzzleDbHelper(this);
         mPuzzle = dbHelper.selectById(id);
 
+        // Assign db data to View elements
         mWord1 = (TextView) (findViewById(R.id.wordLabel1));
         mWord2 = (TextView) (findViewById(R.id.wordLabel2));
         mWord3 = (TextView) (findViewById(R.id.wordLabel3));
@@ -84,19 +87,19 @@ public class PuzzleActivity extends AppCompatActivity {
             switch(answers.indexOf(guess)){
                 case 0:
                     mAnswer1.setFocusable(false);
-                    mAnswer1.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                    mAnswer1.setBackgroundColor(getResources().getColor(R.color.correct));
                     return true;
                 case 1:
                     mAnswer2.setFocusable(false);
-                    mAnswer2.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                    mAnswer2.setBackgroundColor(getResources().getColor(R.color.correct));
                     return true;
                 case 2:
                     mAnswer3.setFocusable(false);
-                    mAnswer3.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                    mAnswer3.setBackgroundColor(getResources().getColor(R.color.correct));
                     return true;
                 case 3:
                     mAnswer4.setFocusable(false);
-                    mAnswer4.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                    mAnswer4.setBackgroundColor(getResources().getColor(R.color.correct));
                     return true;
             }
         }

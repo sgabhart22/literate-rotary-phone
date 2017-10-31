@@ -107,7 +107,7 @@ public class DownloadService extends JobIntentService {
             cropped.compress(Bitmap.CompressFormat.PNG, 100, os);
             byte[] bytes = os.toByteArray();
 
-
+            // Put information in db
             PuzzleDbHelper dbHelper = new PuzzleDbHelper(cx);
             SQLiteDatabase db = dbHelper.getWritableDatabase();
 
@@ -132,6 +132,7 @@ public class DownloadService extends JobIntentService {
             System.err.println(e);
         }
 
+        // Let MainActivity know it should update its view
         Intent broadcastIntent = new Intent("download-event");
         LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
     } //onHandleWork
